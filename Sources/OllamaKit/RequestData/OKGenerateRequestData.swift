@@ -19,7 +19,10 @@ public struct OKGenerateRequestData: Sendable {
     
     /// /// An optional array of base64-encoded images.
     public let images: [String]?
-    
+
+    /// An optional array of ``OKJSONValue`` representing the JSON schema for the response.
+    public let format: [OKJSONValue]?
+
     /// An optional string specifying the system message.
     public var system: String?
     
@@ -29,11 +32,12 @@ public struct OKGenerateRequestData: Sendable {
     /// Optional ``OKCompletionOptions`` providing additional configuration for the generation request.
     public var options: OKCompletionOptions?
     
-    public init(model: String, prompt: String, images: [String]? = nil) {
+    public init(model: String, prompt: String, images: [String]? = nil, format: [OKJSONValue]? = nil) {
         self.stream = true
         self.model = model
         self.prompt = prompt
         self.images = images
+        self.format = format
     }
 }
 
@@ -44,6 +48,7 @@ extension OKGenerateRequestData: Encodable {
         try container.encode(model, forKey: .model)
         try container.encode(prompt, forKey: .prompt)
         try container.encodeIfPresent(images, forKey: .images)
+        try container.encodeIfPresent(format, forKey: .format)
         try container.encodeIfPresent(system, forKey: .system)
         try container.encodeIfPresent(context, forKey: .context)
         
@@ -53,6 +58,6 @@ extension OKGenerateRequestData: Encodable {
     }
     
     private enum CodingKeys: String, CodingKey {
-        case stream, model, prompt, images, system, context
+        case stream, model, prompt, images, format, system, context
     }
 }

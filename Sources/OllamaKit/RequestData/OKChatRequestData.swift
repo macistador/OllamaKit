@@ -19,15 +19,19 @@ public struct OKChatRequestData: Sendable {
     
     /// An optional array of ``OKJSONValue`` representing the tools available for tool calling in the chat.
     public let tools: [OKJSONValue]?
-    
+
+    /// An optional array of ``OKJSONValue`` representing the JSON schema for the response.
+    public let format: [OKJSONValue]?
+
     /// Optional ``OKCompletionOptions`` providing additional configuration for the chat request.
     public var options: OKCompletionOptions?
     
-    public init(model: String, messages: [Message], tools: [OKJSONValue]? = nil) {
+    public init(model: String, messages: [Message], tools: [OKJSONValue]? = nil, format: [OKJSONValue]? = nil) {
         self.stream = tools == nil
         self.model = model
         self.messages = messages
         self.tools = tools
+        self.format = format
     }
     
     /// A structure that represents a single message in the chat request.
@@ -68,13 +72,14 @@ extension OKChatRequestData: Encodable {
         try container.encode(model, forKey: .model)
         try container.encode(messages, forKey: .messages)
         try container.encodeIfPresent(tools, forKey: .tools)
-        
+        try container.encodeIfPresent(format, forKey: .format)
+
         if let options {
             try options.encode(to: encoder)
         }
     }
     
     private enum CodingKeys: String, CodingKey {
-        case stream, model, messages, tools
+        case stream, model, messages, tools, format
     }
 }
